@@ -37,6 +37,7 @@ def plot_bar_chart(keyword_counts):
     plt.savefig(os.path.join(ruta_graficos, "frecuencia_palabras_clave.png"))
     plt.close()
 
+
 def plot_precision_results(precision_results):
     df = pd.DataFrame(precision_results)
     plt.figure(figsize=(8, 5))
@@ -51,6 +52,9 @@ def plot_precision_results(precision_results):
     plt.gca().invert_yaxis()
     plt.savefig(os.path.join(ruta_graficos, "precision_nuevas_palabras.png"))
     plt.close()
+
+
+
 
 
 
