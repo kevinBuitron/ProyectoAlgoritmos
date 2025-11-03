@@ -62,7 +62,7 @@ def main(bib_file_path):
 
         # Graficar resultados
         plot_bar_chart(keyword_counts)
-        generate_wordcloud(output_excel_nuevas)
+        generate_wordcloud(keyword_counts)
         
     except Exception as e:
         print(f"Error: {str(e)}")
