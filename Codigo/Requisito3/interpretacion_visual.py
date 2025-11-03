@@ -37,21 +37,20 @@ def plot_bar_chart(keyword_counts):
     plt.savefig(os.path.join(ruta_graficos, "frecuencia_palabras_clave.png"))
     plt.close()
 
-def generate_wordcloud(keyword_counts):
-        wordcloud = WordCloud(
-        width=1600,              # Mayor resolución horizontal
-        height=800,              # Mayor resolución vertical
-        background_color="white",
-        colormap="tab10",        # Mejores colores (puedes probar: "viridis", "plasma", "Set2", etc.)
-        prefer_horizontal=0.9,   # Preferir palabras en horizontal
-        max_words=200,           # Aumenta el número de palabras visibles
-        contour_color='black',   # Borde negro (opcional)
-        contour_width=0.5        # Grosor del borde
-    ).generate_from_frequencies(keyword_counts)
+def plot_precision_results(precision_results):
+    df = pd.DataFrame(precision_results)
+    plt.figure(figsize=(8, 5))
+    plt.barh(df["Palabra"], df["Similitud"], color="skyblue")
 
-        plt.figure(figsize=(16, 8))  # Lienzo más grande
-        plt.imshow(wordcloud, interpolation="bilinear")
-        plt.axis("off")
-        plt.tight_layout(pad=0)
-        plt.savefig(os.path.join(ruta_graficos, "nube_palabras_clave.png"), dpi=300)  # Alta resolución
-        plt.close()
+    #Agregar etiquetas al final de la barra
+    for i, sim in enumerate(df["Similitud"]):
+        plt.text(sim + 0.01, i, str(round(sim, 2)), va='center', fontsize=10)
+
+    plt.xlabel("Similitud con Palabras Clave Originales")
+    plt.title("Evaluación de Precisión - Nuevas Palabras")
+    plt.gca().invert_yaxis()
+    plt.savefig(os.path.join(ruta_graficos, "precision_nuevas_palabras.png"))
+    plt.close()
+
+
+

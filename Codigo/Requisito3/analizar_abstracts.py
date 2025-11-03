@@ -113,3 +113,5 @@ def extract_new_terms(abstracts, keywords_dict, top_n=15):
     filtered = [w for w in words if w not in stopwords and w not in known_terms]
     counter = Counter(filtered)
     return counter.most_common(top_n)
+
+
