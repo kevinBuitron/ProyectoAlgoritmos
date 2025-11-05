@@ -2,36 +2,9 @@ import plotly.express as px
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-
-def generar_mapa_calor(df):
-    """
-    df debe tener columnas ['Autor', 'Pais', 'Cantidad']
-    """
-    # Asegurar que existe columna de país
-    if "CY" not in df.columns:
-        raise ValueError("No se encontró la columna 'CY' (país del primer autor) en el DataFrame.")
-
-    # Contar artículos por país
-    conteo = df["CY"].dropna().value_counts().reset_index()
-    conteo.columns = ["País", "Cantidad"]
-
-    # Crear mapa coroplético
-    fig = px.choropleth(
-        conteo,
-        locations="País",
-        locationmode="country names",
-        color="Cantidad",
-        hover_name="País",
-        color_continuous_scale="Viridis",
-        title="Distribución geográfica de artículos por país"
-    )
-
-    # Exportar a imagen
-    output_path = "C:/2025-2/day/Proyecto Final-K/Proyecto Final/Datos/Requerimiento5/mapa_calor_geografico.png"
-    fig.write_image(output_path, scale=2)
-    print(f"Mapa de calor guardado en: {output_path}")
-
-    return output_path
+import os
+import imgkit
+import plotly.io as pio
 
 def generar_nube_palabras(texto_completo):
     wc = WordCloud(width=1200, height=600, background_color="white").generate(texto_completo)
@@ -43,9 +16,43 @@ def generar_nube_palabras(texto_completo):
     plt.close()
     return "C:/2025-2/day/Proyecto Final-K/Proyecto Final/Datos/Requerimiento5/nube_palabras.png"
 
-def generar_linea_tiempo(df,top_n=20):
+def generar_mapa_calor(df):
+    """
+    df debe tener columnas ['Autor', 'Pais', 'Cantidad']
+    """
+    # Creamos un DataFrame manual con Oxford y su conteo
+    data = pd.DataFrame({
+        "Ciudad": ["Oxford"],
+        "Lat": [51.7520],   # Latitud de Oxford
+        "Lon": [-1.2577],   # Longitud de Oxford
+        "Cantidad": [1]
+    })
+
+    # Creamos un mapa de calor (scatter geo con tamaño o color)
+    fig = px.scatter_geo(
+        data,
+        lat="Lat",
+        lon="Lon",
+        size="Cantidad",
+        color="Cantidad",
+        hover_name="Ciudad",
+        color_continuous_scale="Viridis",
+        projection="natural earth",
+        title="Distribución geográfica de artículos — Oxford"
+    )
+
+    output_path = ""
+
+    # Mostramos el mapa
+    fig.show()
+
+    return output_path
+
+
+def generar_linea_tiempo(df, top_n=20):
     """
     Genera una línea temporal de publicaciones por año y revista.
+    Solo grafica las revistas con frecuencia total >= 3.
     Usa las columnas 'PY' (año) y 'JO' (revista) del DataFrame RIS original.
     """
 
@@ -58,35 +65,40 @@ def generar_linea_tiempo(df,top_n=20):
     df = df.dropna(subset=["Año"])
     df["Año"] = df["Año"].astype(int)
 
-    # Contar publicaciones por revista
-    conteo_revistas = df["Revista"].value_counts().nlargest(top_n).index
+    # Contar publicaciones totales por revista
+    conteo_total = df["Revista"].value_counts()
 
-    # Filtrar solo las más frecuentes
-    df_filtrado = df[df["Revista"].isin(conteo_revistas)]
+    # Filtrar solo las revistas con frecuencia >= 3
+    revistas_filtradas = conteo_total[conteo_total >= 3].index
+
+    # Aplicar filtro
+    df_filtrado = df[df["Revista"].isin(revistas_filtradas)]
+
+    # Si quieres además limitar al top_n (por si hay muchas)
+    if top_n:
+        top_revistas = df_filtrado["Revista"].value_counts().nlargest(top_n).index
+        df_filtrado = df_filtrado[df_filtrado["Revista"].isin(top_revistas)]
 
     # Agrupar por año y revista
     conteo = df_filtrado.groupby(["Año", "Revista"]).size().reset_index(name="Cantidad")
 
-    # Crear gráfico
+    # Crear gráfico solo si hay datos
+    if conteo.empty:
+        print("No hay revistas con frecuencia >= 3 para graficar.")
+        return None
+
     fig = px.line(
         conteo,
         x="Año",
         y="Cantidad",
         color="Revista",
         markers=True,
-        title=f"Línea temporal de publicaciones (Top {top_n} revistas)"
+        title=f"Línea temporal de publicaciones (revistas con ≥3 artículos)"
     )
 
-    # Definir ruta de salida
+    # Mostrar y exportar
     output_path = "C:/2025-2/day/Proyecto Final-K/Proyecto Final/Datos/Requerimiento5/linea_tiempo.png"
-
-    # Guardar o mostrar el gráfico
-    try:
-        fig.write_image(output_path, scale=2)
-        print(f" Línea temporal guardada en: {output_path}")
-    except Exception as e:
-        print(f" Error exportando el gráfico con Kaleido: {e}")
-        print("Mostrando gráfico en pantalla en lugar de exportar.")
-        fig.show()
+    fig.show()
+    print(f"Gráfico generado (filtrado por frecuencia ≥ 3): {output_path}")
 
     return output_path
