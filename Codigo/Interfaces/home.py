@@ -14,3 +14,5 @@ def home_view():
         st.session_state.current_view = "unificacion"
     if st.button("Calcular similitud textual"):
         st.session_state.current_view = "similitud"
+    if st.button("Categoria y palabras asociadas"):
+        st.session_state.current_view = "categoria"

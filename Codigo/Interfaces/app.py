@@ -4,6 +4,7 @@ import streamlit as st
 from home import home_view
 from unificacion import unificacion_ris_view
 from similitud import similitud_view
+from categoria import categoria_view
 
 # Configuración inicial de la vista
 if "current_view" not in st.session_state:
@@ -16,3 +17,5 @@ if st.session_state.current_view == "unificacion":
     unificacion_ris_view()
 if st.session_state.current_view == "similitud":
     similitud_view()
+if st.session_state.current_view == "categoria":
+    categoria_view()
