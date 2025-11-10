@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from itertools import combinations
 import os
+import re
 
 # Ruta donde se guardarán los gráficos
 ruta_graficos = "C:/2025-2/day/Proyecto Final-K/Proyecto Final/Datos/Requerimiento2"
@@ -22,8 +23,13 @@ def pair_results_to_matrix(pair_dict, n):
         mat[j,i] = s
     return mat
 
-# Finalmente generamos un grafico de calor para visualizar las similitudes
 def plot_heatmap(matrix, labels, title, out_path=None):
+    """
+    Genera un heatmap de similitudes y lo guarda en un archivo PNG.
+
+    Si se pasa `out_path`, la imagen se guarda con ese nombre.
+    Si no, se guarda automáticamente en `ruta_graficos` con el nombre del título del algoritmo.
+    """
     n = len(labels)
     matrix = np.array(matrix)
 
@@ -50,8 +56,17 @@ def plot_heatmap(matrix, labels, title, out_path=None):
     plt.xticks(rotation=45, ha="right", fontsize=10)
     plt.yticks(rotation=0, fontsize=10)
     plt.tight_layout()
-    plt.savefig(os.path.join(ruta_graficos, "frecuencia_palabras_clave.png"))
+
+    # === Nueva lógica para el nombre del archivo ===
+    if out_path is None:
+        # Crear nombre dinámico basado en el título
+        safe_title = re.sub(r"[^\w\-]+", "_", title)  # limpiar caracteres no válidos
+        out_path = os.path.join(ruta_graficos, f"{safe_title}_heatmap.png")
+
+    plt.savefig(out_path)
     plt.close()
+    return out_path  # Devolvemos la ruta final guardada
+
 
 #Top 10 abstacts mas similitud
 def plot_top_similar_heatmap(matrix, labels, title, out_path=None, top_n=10):
