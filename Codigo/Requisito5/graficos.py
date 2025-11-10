@@ -6,7 +6,14 @@ import os
 import imgkit
 import plotly.io as pio
 
-def generar_nube_palabras(texto_completo):
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "Datos", "Requerimiento5")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def generar_nube_palabras(texto_completo, out_path=None):
+    """
+    Genera una nube de palabras y devuelve la ruta PNG.
+    Lanza errores claros si el texto está vacío o falta la dependencia.
+    """
     wc = WordCloud(width=1200, height=600, background_color="white").generate(texto_completo)
     plt.figure(figsize=(12, 6))
     plt.imshow(wc, interpolation='bilinear')

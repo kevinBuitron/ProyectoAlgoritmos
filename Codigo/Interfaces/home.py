@@ -16,3 +16,7 @@ def home_view():
         st.session_state.current_view = "similitud"
     if st.button("Categoria y palabras asociadas"):
         st.session_state.current_view = "categoria"
+    if st.button("Algoritmos agrupamiento jerarquico"):
+        st.session_state.current_view = "agrupamiento"
+    if st.button("Analisis visual"):
+        st.session_state.current_view = "visual"
